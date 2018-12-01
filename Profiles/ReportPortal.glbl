@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<GlobalVariableEntities>
+   <description></description>
+   <name>ReportPortal</name>
+   <tag></tag>
+   <defaultProfile>false</defaultProfile>
+   <GlobalVariableEntity>
+      <description></description>
+      <initValue>'http://192.168.74.207:8080/api/v1'</initValue>
+      <name>RP_HOST</name>
+   </GlobalVariableEntity>
+   <GlobalVariableEntity>
+      <description></description>
+      <initValue>'Bearer f974e146-5f90-4912-9332-5b77d7bbd3d8'</initValue>
+      <name>RP_TOKEN</name>
+   </GlobalVariableEntity>
+   <GlobalVariableEntity>
+      <description></description>
+      <initValue>'Sample'</initValue>
+      <name>RP_NAME</name>
+   </GlobalVariableEntity>
+</GlobalVariableEntities>
