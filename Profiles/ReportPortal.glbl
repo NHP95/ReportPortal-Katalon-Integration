@@ -6,7 +6,7 @@
    <defaultProfile>false</defaultProfile>
    <GlobalVariableEntity>
       <description></description>
-      <initValue>'http://192.168.74.207:8080/api/v1'</initValue>
+      <initValue>'http://127.0.0.1:8080/api/v1'</initValue>
       <name>RP_HOST</name>
    </GlobalVariableEntity>
    <GlobalVariableEntity>
