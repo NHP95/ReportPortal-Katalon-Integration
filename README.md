@@ -28,4 +28,4 @@ def setUp() {
 }
 ```
 ## Authors
-**Minh Ngoc Hoang** - [minhhoang](https://github.com/minhhoangvn)
+**Minh Ngoc Hoang** - *Core service implementation* - [minhhoang](https://github.com/minhhoangvn)
