@@ -8,13 +8,13 @@ Follow these instructions to get this sample code run on your local machine.
 * Has downloaded and installed the latest version of Katalon Studio.
 
 ### Installing
-Simply copy the *Keywords* and *Profile* folder into your Katalon project's folder.
+Simply copy the *com* folder into your Katalon project's *Keywords* folder.
 
 ### Updating the Katalon profile
 Set following values of the ReportPortal profile to new ones using info from your own profile on ReportPortal server.
 ```
 RP_HOST : your ReportPortal API host. Ex : http://127.0.0.1:8080/api/v1  
-RP_TOKEN : 'Bearer' + UUID value. Ex : Bearer f974e146-5f90-4912-9332-5b77d7bbd3d8  
+RP_TOKEN : 'Bearer' + UUID value. Ex : Bearer f974e133-5f90-4912-9332-5b77d7bbd3d8  
 RP_NAME : your project's name on ReportPortal.  
 ```
 
@@ -24,7 +24,7 @@ Add the following code snippet into your suites. This will create a launch objec
 @SetUp(skipped = false) // Please change skipped to be false to activate this method.
 def setUp() {
 	// Put your code here.
-	ExecutionEventManager.getInstance().addListenerEventHandle(new ReportPortalListener("Sample_Suite"))
+	ExecutionEventManager.getInstance().addListenerEventHandle(new ReportPortalListener("Sample_Launch", "Sample_Suite"))
 }
 ```
 ## Authors
