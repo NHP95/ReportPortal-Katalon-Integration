@@ -9,7 +9,7 @@ Follow these instructions to get this sample code run on your local machine.
 * Has installed Gradle 5.0.
 
 ### Installing
-Copy the *com* folder into your Katalon project's *Keywords* folder.
+Copy the *com* folder into your Katalon project's *Keywords* folder.  
 Copy the "build.gradle" file into the base folder of your project. Then run the command :
 ```
 gradle katalonCopyDependencies
