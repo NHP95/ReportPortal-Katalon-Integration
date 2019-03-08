@@ -6,9 +6,14 @@ Follow these instructions to get this sample code run on your local machine.
 ### Prerequisites
 * Has set up a ReportPortal.io server on your own machine.
 * Has downloaded and installed the latest version of Katalon Studio.
+* Has installed Gradle 5.0.
 
 ### Installing
-Simply copy the *com* folder into your Katalon project's *Keywords* folder.
+Copy the *com* folder into your Katalon project's *Keywords* folder.
+Copy the "build.gradle" file into the base folder of your project. Then run the command :
+```
+gradle katalonCopyDependencies
+```
 
 ### Updating the Katalon profile
 Set following values of the ReportPortal profile to new ones using info from your own profile on ReportPortal server.

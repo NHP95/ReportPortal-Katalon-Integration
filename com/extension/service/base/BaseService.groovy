@@ -55,7 +55,7 @@ public abstract class BaseService {
 					.build()
 		}
 	}
-
+	
 	protected logErrorResponse(ResponseObject res) {
 		if (!(res.getStatusCode() in [200, 201])) {
 			Class clazz = this.getClass()

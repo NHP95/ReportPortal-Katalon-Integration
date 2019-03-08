@@ -10,7 +10,7 @@ import com.extension.service.helper.Constant
 import com.kms.katalon.core.context.internal.ExecutionListenerEvent
 import com.kms.katalon.core.context.internal.ExecutionListenerEventHandler
 import com.kms.katalon.core.context.internal.InternalTestCaseContext
-
+import com.utils.DateUtils
 
 
 
@@ -20,6 +20,7 @@ public class ReportPortalListener extends BaseListener implements ExecutionListe
 	private LoggingService logging
 	private ReportPortalContext context
 	private Closure afterTestClosure = null
+	private Closure screenShotClosure = null
 
 	public ReportPortalListener(launchName, suiteName) {
 		this.launch = new LaunchService(launchName)
@@ -47,6 +48,7 @@ public class ReportPortalListener extends BaseListener implements ExecutionListe
 	@Override
 	public afterSuiteHandler(){
 		this.executeAfterTestClosure()
+		this.executeScreenShotClosure()
 
 		// Finish suite
 		this.context.setState(ReportPortalState.SUITE)
@@ -88,6 +90,7 @@ public class ReportPortalListener extends BaseListener implements ExecutionListe
 	@Override
 	public beforeStepHandler(stepInfo){
 		this.executeAfterTestClosure()
+		this.executeScreenShotClosure()
 		this.context.addLogStep(stepInfo)
 	}
 
@@ -104,6 +107,13 @@ public class ReportPortalListener extends BaseListener implements ExecutionListe
 		if (afterTestClosure) {
 			afterTestClosure.call()
 			afterTestClosure = null
+		}
+	}
+
+	private executeScreenShotClosure() {
+		if (screenShotClosure) {
+			screenShotClosure.call()
+			screenShotClosure = null
 		}
 	}
 
@@ -124,25 +134,37 @@ public class ReportPortalListener extends BaseListener implements ExecutionListe
 
 	private createLogSteps(stepId) {
 		this.context.logSteps.each {
-			this.createDecriptionSteps(stepId,it['description'], it['time'])
-			this.logging.logInfo(stepId, it['name'], it['time'])
+			if (this.isScreenShotStep(it['name'])) {
+				def time = DateUtils.getISOCurrentDate('UTC')
+				def name = it['name']
+				screenShotClosure = {
+					this.logging.logScreenShot(stepId, name, time)
+				}
+			}
+			else {
+				this.createDecriptionSteps(stepId,it['description'])
+				this.logging.logInfo(stepId, it['name'])
+			}
 		}
 		this.context.logSteps.clear()
 	}
 
+	private isScreenShotStep(String stepName) {
+		return stepName.contains("extension.reportportal.context.ReportPortalContext.captureScreenShotForReportportal")
+	}
+
 	private createErrorSteps(stepId) {
 		this.context.errors.each {
-			def time = it['time']
 			it['errors'].each {
-				this.logging.logError(stepId, "[ERROR] " + it.toString() , time)
+				this.logging.logError(stepId, "[ERROR] " + it.toString())
 			}
 		}
 		this.context.errors.clear()
 	}
 
-	private createDecriptionSteps(String itemId, String description, String time) {
+	private createDecriptionSteps(String itemId, String description) {
 		if (!description.isEmpty()) {
-			this.logging.logDebug(itemId, "[DESCRIPTION] " + description, time)
+			this.logging.logDebug(itemId, "[DESCRIPTION] " + description)
 		}
 	}
 

@@ -1,12 +1,19 @@
 package com.extension.reportportal.context
 
+import org.openqa.selenium.OutputType
+import org.openqa.selenium.TakesScreenshot
+
 import com.extension.reportportal.state.LaunchState
 import com.extension.reportportal.state.StepState
 import com.extension.reportportal.state.SuiteState
 import com.extension.reportportal.state.TestState
 import com.extension.service.base.State
 import com.extension.service.helper.Constant
+import com.kms.katalon.core.annotation.Keyword
 import com.kms.katalon.core.logging.ErrorCollector
+import com.kms.katalon.core.logging.KeywordLogger
+import com.kms.katalon.core.webui.driver.DriverFactory
+import com.kms.katalon.core.webui.exception.BrowserNotOpenedException
 import com.utils.DateUtils
 
 
@@ -24,6 +31,7 @@ public class ReportPortalContext {
 	public List<String> foundErrors
 	public List<String> errors
 	public List<Object> logSteps
+	public static List<Object> screenshots = []
 
 	public ReportPortalContext() {
 		this.currentLaunch = null
@@ -87,6 +95,18 @@ public class ReportPortalContext {
 
 	public collectIssues() {
 		this.errors.add([('errors') : this.getNewErrors(), ('time') : DateUtils.getISOCurrentDate('UTC')])
+	}
+	
+	@Keyword
+	public static void captureScreenShotForReportportal() {
+		try {
+			def scrFile = ((TakesScreenshot)DriverFactory.getWebDriver()).getScreenshotAs(OutputType.BYTES);
+			screenshots.add(scrFile)
+		}
+		catch (BrowserNotOpenedException e) {
+			KeywordLogger log = new KeywordLogger()
+			log.logWarning("Browser is not opened.")
+		}
 	}
 
 	private getNewErrors() {
