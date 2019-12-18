@@ -1,18 +1,17 @@
 package com.extension.reportportal.service
 
 import com.extension.reportportal.context.ReportPortalContext
-import com.extension.service.annotation.RequestBuilder
 import com.extension.service.base.BaseService
-import com.extension.service.helper.BodyType
-import com.extension.service.helper.MethodType
 import com.kms.katalon.core.annotation.Keyword
 import com.kms.katalon.core.logging.KeywordLogger
 import com.kms.katalon.core.testobject.ConditionType
 import com.kms.katalon.core.testobject.RequestObject
+import com.kms.katalon.core.testobject.RestRequestObjectBuilder
 import com.kms.katalon.core.testobject.TestObjectProperty
 import com.kms.katalon.core.webservice.keyword.WSBuiltInKeywords as WS
 import com.utils.DateUtils
 
+import groovy.json.JsonOutput
 import internal.GlobalVariable
 import okhttp3.MediaType
 import okhttp3.MultipartBody
@@ -22,10 +21,6 @@ import okhttp3.RequestBody
 import okhttp3.Response
 
 public class LoggingService extends BaseService{
-	private logMessage
-	private logLevel
-	private logTime
-	private testItemId
 	private LaunchService launch
 
 	public LoggingService(launch) {
@@ -79,34 +74,24 @@ public class LoggingService extends BaseService{
 
 	@Keyword
 	private log(testItemId, level, message='', time=DateUtils.getISOCurrentDate('UTC')) {
-		this.testItemId = testItemId
-		this.logLevel = level
-		this.logMessage = message
-		this.logTime = time
-		def res = WS.sendRequest(createLogRequest())
-		this.logErrorResponse(res)
-	}
-
-
-	@RequestBuilder(requestType = {
-		MethodType.POST
-	},
-	bodyType = {
-		BodyType.TEXT_BODY
-	},
-	headers = {
-		[new TestObjectProperty("Content-Type", ConditionType.EQUALS, "application/json"),
-			new TestObjectProperty("Authorization", ConditionType.EQUALS, "${GlobalVariable.RP_TOKEN}")]
-	},
-	requestUrl = {
-		"${GlobalVariable.RP_HOST}/${this.launch.getProjectName()}/log"
-	},
-	bodyTextData = {
-		[('item_id'): "${this.testItemId}",
-			('level'): "${this.logLevel}",
-			('message'): "${this.logMessage}",
-			('time'): "${this.logTime}"
+		/*
+		 * Use the built-in request builder to prevent an undetermined encoding issue in Katalon 7.x.x version
+		 */
+		def payload = [('item_id'): "${testItemId}",
+			('level'): "${level}",
+			('message'): "${message}",
+			('time'): "${time}"
 		]
-	})
-	private Closure<RequestObject> createLogRequest
+		String body = JsonOutput.toJson(payload)
+		RequestObject logRequest = new RestRequestObjectBuilder()
+				.withRestUrl("${GlobalVariable.RP_HOST}/${this.launch.getProjectName()}/log")
+				.withHttpHeaders([
+					new TestObjectProperty("Content-Type", ConditionType.EQUALS, "application/json; charset=utf-8"),
+					new TestObjectProperty("Authorization", ConditionType.EQUALS, "${GlobalVariable.RP_TOKEN}")
+				])
+				.withRestRequestMethod("POST")
+				.withTextBodyContent(body, "UTF-8")
+				.build()
+		this.logErrorResponse(WS.sendRequest(logRequest))
+	}
 }
