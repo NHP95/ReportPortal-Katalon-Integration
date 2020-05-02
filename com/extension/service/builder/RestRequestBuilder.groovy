@@ -15,7 +15,6 @@ import groovy.json.JsonOutput
 
 
 class RestRequestBuilder {
-	private static RestRequestBuilder instance = null;
 	private String requestObjectName = "DefaultName";
 	private String requestUUID = "";
 	private String restUrl = "";
@@ -25,13 +24,15 @@ class RestRequestBuilder {
 	private List<TestObjectProperty> requestQueryParameters = new ArrayList<TestObjectProperty>();
 	private Map<String,String> bodyData = new HashMap<String, String>();
 
-	private RestRequestBuilder(){}
-	public static RestRequestBuilder getInstance(){
-		if(instance == null){
-			instance = new RestRequestBuilder();
-		}
-		return instance;
+	private static class InstanceHolder {
+		private static final RestRequestBuilder INSTANCE = new RestRequestBuilder();
 	}
+
+	public static RestRequestBuilder getInstance() {
+		return InstanceHolder.INSTANCE;
+	}
+	
+	private RestRequestBuilder(){}
 
 	public RestRequestBuilder Builder(MethodType type){
 		this.requestType = type;
@@ -55,6 +56,7 @@ class RestRequestBuilder {
 
 	public RestRequestBuilder setRequestHeader(List<TestObjectProperty> headers){
 		this.requestHeaders.addAll(headers);
+		this.filterDuplicatedHeader();
 		return this;
 	}
 
@@ -93,6 +95,10 @@ class RestRequestBuilder {
 		request.setRestRequestMethod(this.requestType.getMethodName())
 		request.setHttpHeaderProperties(this.requestHeaders);
 		request.setRestParameters(this.requestQueryParameters);
+	}
+	
+	private void filterDuplicatedHeader() {
+		this.requestHeaders.unique {TestObjectProperty propA, TestObjectProperty propB -> propA.getName() <=> propB.getName()}
 	}
 
 	private void buildRequestBody(RequestObject request) {
