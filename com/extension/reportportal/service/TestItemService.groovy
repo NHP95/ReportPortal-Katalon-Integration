@@ -7,11 +7,13 @@ import com.extension.service.helper.Constant
 import com.extension.service.helper.MethodType
 import com.kms.katalon.core.testobject.ConditionType
 import com.kms.katalon.core.testobject.RequestObject
+import com.kms.katalon.core.testobject.RestRequestObjectBuilder
 import com.kms.katalon.core.testobject.TestObjectProperty
 import com.kms.katalon.core.webservice.keyword.WSBuiltInKeywords as WS
 import com.utils.DateUtils
 import com.utils.JSONUtils
 
+import groovy.json.JsonOutput
 import internal.GlobalVariable
 
 
@@ -126,6 +128,22 @@ public class TestItemService extends BaseService{
 		this.setTestItemStatus(status)
 		this.setIssueType(issueType)
 		def res = WS.sendRequest(finishTestItemRequest())
+		this.logErrorResponse(res)
+		return JSONUtils.getJSONObject(res)
+	}
+
+	private sendTestItemRequest(String uri, MethodType methodType, Map payload) {
+		String body = JsonOutput.toJson(payload)
+		RequestObject testItemRequest = new RestRequestObjectBuilder()
+				.withRestUrl(uri)
+				.withHttpHeaders([
+					new TestObjectProperty("Content-Type", ConditionType.EQUALS, "application/json; charset=utf-8"),
+					new TestObjectProperty("Authorization", ConditionType.EQUALS, "${GlobalVariable.RP_TOKEN}")
+				])
+				.withRestRequestMethod(methodType.getMethodName())
+				.withTextBodyContent(body, "UTF-8")
+				.build()
+		def res = WS.sendRequest(testItemRequest)
 		this.logErrorResponse(res)
 		return JSONUtils.getJSONObject(res)
 	}
