@@ -31,7 +31,7 @@ class RestRequestBuilder {
 	public static RestRequestBuilder getInstance() {
 		return InstanceHolder.INSTANCE;
 	}
-	
+
 	private RestRequestBuilder(){}
 
 	public RestRequestBuilder Builder(MethodType type){
@@ -56,7 +56,6 @@ class RestRequestBuilder {
 
 	public RestRequestBuilder setRequestHeader(List<TestObjectProperty> headers){
 		this.requestHeaders.addAll(headers);
-		this.filterDuplicatedHeader();
 		return this;
 	}
 
@@ -82,6 +81,7 @@ class RestRequestBuilder {
 		this.buildRequestDescription(request);
 		this.buildRequestHeader(request)
 		this.buildRequestBody(request);
+		this.resetHeadersToDefaultState();
 		return request;
 	}
 
@@ -91,14 +91,17 @@ class RestRequestBuilder {
 	}
 
 	private void buildRequestHeader(RequestObject request){
+		List<TestObjectProperty> headers = []
+		headers.addAll(this.requestHeaders)
 		request.setRestUrl(this.restUrl);
 		request.setRestRequestMethod(this.requestType.getMethodName())
-		request.setHttpHeaderProperties(this.requestHeaders);
+		request.setHttpHeaderProperties(headers);
 		request.setRestParameters(this.requestQueryParameters);
 	}
-	
-	private void filterDuplicatedHeader() {
-		this.requestHeaders.unique {TestObjectProperty propA, TestObjectProperty propB -> propA.getName() <=> propB.getName()}
+
+	private void resetHeadersToDefaultState() {
+		this.requestHeaders.clear();
+		this.requestHeaders.add(Constant.DEFAULT_USER_AGENT_HEADER)
 	}
 
 	private void buildRequestBody(RequestObject request) {
